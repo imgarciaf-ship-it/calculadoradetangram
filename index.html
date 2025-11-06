@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Costos Tangram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Aplicar la fuente Inter y asegurar que el cuerpo ocupe toda la altura de la ventana */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        /* Estilos personalizados para los campos de entrada */
+        .input-field {
+            @apply w-full mt-1 p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900;
+        }
+        /* Estilos para los títulos de sección */
+        .header-title {
+            @apply text-2xl font-bold mt-8 mb-4 border-b pb-2 text-blue-800;
+        }
+        /* Estilos para las cajas de resultado */
+        .result-box {
+            @apply p-3 bg-gray-50 border border-gray-200 rounded-lg text-lg font-mono tracking-wider shadow-inner text-right;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="flex flex-col md:flex-row h-screen overflow-auto">
+
+        <div class="flex-1 w-full md:w-1/2 bg-white text-gray-800 flex flex-col items-center p-8 overflow-y-auto">
+            
+            <div class="max-w-lg w-full">
+                <h1 class="text-4xl font-extrabold mb-8 text-center text-blue-600 bg-blue-50 p-4 rounded-xl shadow-lg">
+                    📊 Costos de Producción - Tangram
+                </h1>
+                
+                <h2 class="header-title text-blue-600">📐 Geometría y Margen</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="ladoTangram" class="block text-sm font-medium text-gray-700">Lado del Tangram (cm)</label>
+                        <input type="number" id="ladoTangram" value="20" min="1" oninput="calculateCosts()" class="input-field">
+                    </div>
+                    
+                    <div>
+                        <label for="margenGanancia" class="block text-sm font-medium text-gray-700">Margen de Ganancia Deseado (%)</label>
+                        <input type="number" id="margenGanancia" value="150" min="0" oninput="calculateCosts()" class="input-field">
+                    </div>
+                </div>
+
+                <h2 class="header-title text-blue-600">💰 Costos de Materiales (Base)</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="costoMaderaBase" class="block text-sm font-medium text-gray-700">Costo Base Madera (USD)</label>
+                        <input type="number" id="costoMaderaBase" value="12" min="0.01" step="0.01" oninput="calculateCosts()" class="input-field">
+                    </div>
+
+                    <div>
+                        <label for="costoLataPintura" class="block text-sm font-medium text-gray-700">Costo de la Lata de Pintura (USD)</label>
+                        <input type="number" id="costoLataPintura" value="5" min="0.01" step="0.01" oninput="calculateCosts()" class="input-field">
+                    </div>
+                </div>
+
+                <h2 class="header-title text-blue-600">⚙️ Indirectos y Operativos</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="porcentajeManoObra" class="block text-sm font-medium text-gray-700">% Mano de Obra (sobre Materiales)</label>
+                        <input type="number" id="porcentajeManoObra" value="20" min="0" oninput="calculateCosts()" class="input-field">
+                    </div>
+
+                    <div>
+                        <label for="costoOperativoFijo" class="block text-sm font-medium text-gray-700">Costos Operativos/Empaque (Fijo USD)</label>
+                        <input type="number" id="costoOperativoFijo" value="1.00" min="0" step="0.01" oninput="calculateCosts()" class="input-field">
+                    </div>
+                </div>
+
+                <div class="mt-10 pt-6 border-t border-gray-200 text-center text-gray-500 text-sm">
+                    <p class="mb-2">Diseño y Prototipo por:</p>
+                    <p class="font-bold text-gray-700">Isabella García de 3ero B</p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="flex-1 w-full md:w-1/2 bg-blue-600 text-white flex flex-col items-center p-8 overflow-y-auto border-t md:border-t-0 md:border-l border-blue-700">
+            <div class="max-w-lg w-full">
+                <h2 class="text-4xl font-extrabold mb-8 text-center bg-blue-700 p-4 rounded-xl shadow-lg">
+                    ✨ Desglose y Resultados
+                </h2>
+
+                <div class="bg-blue-50 p-6 rounded-xl shadow-2xl text-gray-800 space-y-5">
+                    
+                    <h3 class="text-xl font-semibold border-b pb-2 text-blue-800">Cálculos de Área y Densidad</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Área del Tangram (cm²)</label>
+                            <div id="area_m2" class="result-box text-blue-600">0.0400</div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Densidad de Costo Madera (USD/cm²)</label>
+                            <div id="densidadCostoMadera" class="result-box text-blue-600">120.00</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold border-b pb-2 pt-4 text-blue-800">Costos Directos (Por Unidad)</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Costo de Madera (USD)</label>
+                            <div id="costoMaderaUnidad" class="result-box text-black font-bold">4.80</div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Costo Est. de Pintura (USD)</label>
+                            <div id="costoPinturaUnidad" class="result-box text-black font-bold">0.05</div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="block text-sm font-extrabold text-blue-800 uppercase mb-1">Costo de Materiales (TOTAL)</label>
+                        <div id="costoMaterialesTotal" class="result-box bg-indigo-100 text-indigo-700 text-xl font-extrabold shadow-md">4.85</div>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold border-b pb-2 pt-4 text-blue-800">Costos Indirectos y Fijos</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Costo de Mano de Obra (USD)</label>
+                            <div id="costoManoObra" class="result-box">0.97</div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Costos Operativos (USD)</label>
+                            <div id="costoOperativo" class="result-box">1.00</div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 border-t border-gray-300">
+                        <label class="block text-sm font-extrabold text-blue-800 uppercase mb-1">COSTO TOTAL DE PRODUCCIÓN</label>
+                        <div id="costoProduccionTotal" class="result-box bg-red-200 text-red-800 text-2xl font-extrabold shadow-xl">6.82</div>
+                    </div>
+
+                    <div class="pt-4 border-t border-gray-300">
+                        <label class="block text-sm font-extrabold text-blue-800 uppercase mb-1">PRECIO DE VENTA SUGERIDO</label>
+                        <div id="precioVentaSugerido" class="result-box bg-green-200 text-green-800 text-3xl font-extrabold shadow-xl">17.05</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', calculateCosts);
+
+    function calculateCosts() {
+        // --- 1. Obtener Entradas ---
+        const ladoCm = parseFloat(document.getElementById('ladoTangram').value) || 0;
+        const costoMaderaBase = parseFloat(document.getElementById('costoMaderaBase').value) || 0;
+        const costoLataPintura = parseFloat(document.getElementById('costoLataPintura').value) || 0;
+        const margenGanancia = parseFloat(document.getElementById('margenGanancia').value) || 0;
+        const porcentajeManoObra = parseFloat(document.getElementById('porcentajeManoObra').value) || 0;
+        const costoOperativoFijo = parseFloat(document.getElementById('costoOperativoFijo').value) || 0;
+
+        // --- 2. Cálculos de Área y Densidad (Sección A) ---
+        const areaCm2 = ladoCm * ladoCm; // Área en cm²
+        const areaM2 = areaCm2 / 10000; // Área en m²
+
+        const areaMaderaBase = 0.1; // 0.1 m² es el área de la base de costo 
+        const densidadCostoMadera = costoMaderaBase / areaMaderaBase; // USD/m²
+
+        // --- 3. Costo de Materiales (Sección B) ---
+        const costoMaderaUnidad = areaM2 * densidadCostoMadera; 
+
+        // Asumimos una estimación del 1% del costo de la lata para un solo tangram
+        const costoPinturaUnidad = costoLataPintura * 0.01;
+
+        const costoMaterialesTotal = costoMaderaUnidad + costoPinturaUnidad;
+
+        // --- 4. Resumen de Costos (Sección C) ---
+        // Mano de Obra es un % del Costo Total de Materiales
+        const costoManoObra = costoMaterialesTotal * (porcentajeManoObra / 100); 
+
+        // Costo Operativo es fijo
+        const costoOperativo = costoOperativoFijo;
+
+        // Costo Total de Producción
+        const costoProduccionTotal = costoMaterialesTotal + costoManoObra + costoOperativo;
+
+        // --- 5. Precio de Venta (Sección D) ---
+        const precioVentaSugerido = costoProduccionTotal * (1 + margenGanancia / 100);
+
+        // --- 6. Actualizar la Interfaz de Usuario ---
+        
+        // Función de formateo a dos decimales
+        const formatCurrency = (value) => value.toFixed(2);
+        const formatArea = (value) => value.toFixed(4); // Más precisión para el área
+
+        document.getElementById('area_m2').textContent = formatArea(areaM2);
+        document.getElementById('densidadCostoMadera').textContent = formatCurrency(densidadCostoMadera);
+        document.getElementById('costoMaderaUnidad').textContent = formatCurrency(costoMaderaUnidad);
+        document.getElementById('costoPinturaUnidad').textContent = formatCurrency(costoPinturaUnidad);
+        document.getElementById('costoMaterialesTotal').textContent = formatCurrency(costoMaterialesTotal);
+        document.getElementById('costoManoObra').textContent = formatCurrency(costoManoObra);
+        document.getElementById('costoOperativo').textContent = formatCurrency(costoOperativo);
+        document.getElementById('costoProduccionTotal').textContent = formatCurrency(costoProduccionTotal);
+        document.getElementById('precioVentaSugerido').textContent = formatCurrency(precioVentaSugerido);
+    }
+</script>
+</body>
+</html>
